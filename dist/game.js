@@ -14,7 +14,7 @@ var round = 0;
 var _loop = function _loop() {
   round++;
   console.log("round ".concat(round, ":"));
-  console.log("/tsrarting funds: ".concat(funds, "p"));
+  console.log("\tsrarting funds: ".concat(funds, "p"));
   var bets = {
     crown: 0,
     anchor: 0,
@@ -55,7 +55,7 @@ var _loop = function _loop() {
 
   for (var die = 0; die < hand.length; die++) {
     var _face = hand[die];
-    if (bets[_face] > 0) winnings = winnings + best[_face];
+    if (bets[_face] > 0) winnings = winnings + bets[_face];
   }
 
   funds = funds + winnings;
