@@ -86,8 +86,61 @@
 //   console.log(it.next(arg).value);
 // }
 
-for (var i = 5; i >= 0; i--) {
-  setTimeout(function() {
-    console.log(i===0 ? "Start!" : i);
-  }, (5 - i)*1000);
+// for (var i = 5; i >= 0; i--) {
+//   setTimeout(function() {
+//     console.log(i===0 ? "Start!" : i);
+//   }, (5 - i)*1000);
+// }
+
+function countdown(seconds) {
+  return new Promise(function(resolve, reject) {
+    for(let i=seconds; i>=0; i--) {
+      setTimeout(function() {
+        if(i>0) console.log(i + '...');
+        else resolve(console.log("Start!"));
+      }, (seconds-i)*1000);
+    }
+  });
 }
+
+const EventEmitter = require('events').EventEmitter;
+
+class Countdown extends EventEmitter {
+  constructor(seconds, superstitious) {
+    super();
+    this.seconds = seconds;
+    this.superstitious = !!superstitious;
+  }
+
+  go() {
+    const countdown = this;
+    const timeoutIds = [];
+    return new Promise(function(resolve, reject){
+      for(let i=countdown.seconds; i>=0; i--) {
+        timeoutIds.push(setTimeout(function() {
+          if(countdown.superstitious && i===13) {
+            timeoutIds.forEach(clearTimeout);
+            return reject(new Error("Принципиально это не считаем!"));
+          }
+          countdown.emit('tick', i);
+          if(i===0) resolve();
+        }, (countdown.seconds-i)*200));
+      }
+    });
+  }
+}
+
+const c = new Countdown(14, true);
+
+c.on('tick', function(i) {
+  if(i>0) console.log(i + '...');
+});
+
+c.go()
+  .then(
+    function(){
+      console.log('Start!');
+    },
+    function(err) {
+      console.log(err.message);
+    })
