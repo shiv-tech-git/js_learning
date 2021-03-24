@@ -27,6 +27,8 @@
     "eslint-plugin-standard": "^5.0.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
-    "gulp-eslint": "^6.0.0"
+    "gulp-eslint": "^6.0.0",
+    "why-is-node-running": "^2.2.0",
+    "wtfnode": "^0.8.4"
   }
 }

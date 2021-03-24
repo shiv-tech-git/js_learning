@@ -3,6 +3,8 @@
 //   { subject: 'Elephants', verb: 'are', object: 'large' },
 // ];
 
+const { iteratee } = require("underscore");
+
 // function say({ subject, verb, object }) {
 //   console.log(`${subject} ${verb} ${object}`);
 // }
@@ -92,55 +94,140 @@
 //   }, (5 - i)*1000);
 // }
 
-function countdown(seconds) {
+// function countdown(seconds) {
+//   return new Promise(function(resolve, reject) {
+//     for(let i=seconds; i>=0; i--) {
+//       setTimeout(function() {
+//         if(i>0) console.log(i + '...');
+//         else resolve(console.log("Start!"));
+//       }, (seconds-i)*1000);
+//     }
+//   });
+// }
+
+// const EventEmitter = require('events').EventEmitter;
+// const log = require('why-is-node-running');
+// var wtf = require('wtfnode');
+
+// class Countdown extends EventEmitter {
+//   constructor(seconds, superstitious) {
+//     super();
+//     this.seconds = seconds;
+//     this.superstitious = !!superstitious;
+//   }
+
+//   go() {
+//     const countdown = this;
+//     const timeoutIds = [];
+//     return new Promise(function(resolve, reject){
+//       for(let i=countdown.seconds; i>=0; i--) {
+//         timeoutIds.push(setTimeout(function() {
+//           if(countdown.superstitious && i===13) {
+//             timeoutIds.forEach(clearTimeout);
+//             return reject(new Error("Принципиально это не считаем!"));
+//           }
+//           countdown.emit('tick', i);
+//           if(i===0) resolve();
+//         }, (countdown.seconds-i)*200));
+//       }
+//     });
+//   }
+// }
+
+// function launch() {
+//   return new Promise(function(resolve, reject){
+//     let r = Math.random()
+//     r = 0.3;
+//     if( r < 0.5) return;
+    
+//     console.log("Lets go!");
+//     setTimeout(function() {
+//       resolve("On orbit!");
+//     }, 1000);
+//   });
+// }
+
+// function addTimeout(fn, timeout) {
+//   if(timeout === undefined) timeout = 1000;
+//   return function(...args) {
+//     return new Promise(function(resolve, reject) {
+//       const tid = setTimeout(reject, timeout, new Error("Promise period has been expired"));
+//       fn(...args).then(function(msg) {resolve(msg);});
+//     })
+//   }
+// }
+
+// const c = new Countdown(5, true);
+
+// c.on('tick', function(i) {
+//   if(i>0) console.log(i + '...');
+// });
+
+// c.go()
+//   .then(addTimeout(launch, 4*1000))
+//   .then(function(msg){
+//     console.log(msg);
+//   })
+//   .catch(function(err) {
+//     console.log("Huston, we got a problem: " + err.message);
+//   })
+
+const fs = require('fs');
+
+function nfcall(f, ...args) {
   return new Promise(function(resolve, reject) {
-    for(let i=seconds; i>=0; i--) {
-      setTimeout(function() {
-        if(i>0) console.log(i + '...');
-        else resolve(console.log("Start!"));
-      }, (seconds-i)*1000);
-    }
+    f.call(null, ...args, function(err, ...args) {
+      if(err) return reject(err);
+      resolve(args.length < 2 ? args[0] : args);
+    });
   });
 }
 
-const EventEmitter = require('events').EventEmitter;
-
-class Countdown extends EventEmitter {
-  constructor(seconds, superstitious) {
-    super();
-    this.seconds = seconds;
-    this.superstitious = !!superstitious;
-  }
-
-  go() {
-    const countdown = this;
-    const timeoutIds = [];
-    return new Promise(function(resolve, reject){
-      for(let i=countdown.seconds; i>=0; i--) {
-        timeoutIds.push(setTimeout(function() {
-          if(countdown.superstitious && i===13) {
-            timeoutIds.forEach(clearTimeout);
-            return reject(new Error("Принципиально это не считаем!"));
-          }
-          countdown.emit('tick', i);
-          if(i===0) resolve();
-        }, (countdown.seconds-i)*200));
-      }
-    });
-  }
+function ptimeout(delay) {
+  return new Promise(function(resolve, reject) {
+    setTimeout(resolve, delay);
+  });
 }
 
-const c = new Countdown(14, true);
+function grun(g) {
+  const it = g();
+  (function iterate(val){
+    const x = it.next(val);
+    if(!x.done) {
+      if(x.value instanceof Promise) {
+        x.value.then(iterate).catch(err => it.throw(err));
+      } else {
+        setTimeout(iterate, 0, x.value);
+      }
+    }
+  })();
+}
 
-c.on('tick', function(i) {
-  if(i>0) console.log(i + '...');
-});
+function* theFutureIsNow() {
+  const dataA = yield nfcall(fs.readFile, __dirname + '/a.txt');
+  const dataB = yield nfcall(fs.readFile, __dirname + '/b.txt');
+  const dataC = yield nfcall(fs.readFile, __dirname + '/c.txt');
+  
+  yield ptimeout(4*1000);
+  yield nfcall(fs.writeFile, 'd.txt', dataA+dataB+dataC);
+}
 
-c.go()
-  .then(
-    function(){
-      console.log('Start!');
-    },
-    function(err) {
-      console.log(err.message);
-    })
+grun(theFutureIsNow);
+
+// let txt = fs.readFile(__dirname +'/a.txt', "utf8", (err, data) => {
+//   if (err) {
+//     console.log(err.stack);
+//     return;
+//   }});
+
+
+
+//   fs.readFile('/Users/joe/test.txt', 'utf8' , (err, data) => {
+//     if (err) {
+//       console.error(err)
+//       return
+//     }
+//     console.log(data)
+//   })
+
+// console.log(__dirname +'/a.txt')
