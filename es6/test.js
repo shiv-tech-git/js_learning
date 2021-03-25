@@ -3,7 +3,7 @@
 //   { subject: 'Elephants', verb: 'are', object: 'large' },
 // ];
 
-const { iteratee } = require("underscore");
+// const { iteratee } = require("underscore");
 
 // function say({ subject, verb, object }) {
 //   console.log(`${subject} ${verb} ${object}`);
@@ -172,47 +172,47 @@ const { iteratee } = require("underscore");
 //     console.log("Huston, we got a problem: " + err.message);
 //   })
 
-const fs = require('fs');
+// const fs = require('fs');
 
-function nfcall(f, ...args) {
-  return new Promise(function(resolve, reject) {
-    f.call(null, ...args, function(err, ...args) {
-      if(err) return reject(err);
-      resolve(args.length < 2 ? args[0] : args);
-    });
-  });
-}
+// function nfcall(f, ...args) {
+//   return new Promise(function(resolve, reject) {
+//     f.call(null, ...args, function(err, ...args) {
+//       if(err) return reject(err);
+//       resolve(args.length < 2 ? args[0] : args);
+//     });
+//   });
+// }
 
-function ptimeout(delay) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(resolve, delay);
-  });
-}
+// function ptimeout(delay) {
+//   return new Promise(function(resolve, reject) {
+//     setTimeout(resolve, delay);
+//   });
+// }
 
-function grun(g) {
-  const it = g();
-  (function iterate(val){
-    const x = it.next(val);
-    if(!x.done) {
-      if(x.value instanceof Promise) {
-        x.value.then(iterate).catch(err => it.throw(err));
-      } else {
-        setTimeout(iterate, 0, x.value);
-      }
-    }
-  })();
-}
+// function grun(g) {
+//   const it = g();
+//   (function iterate(val){
+//     const x = it.next(val);
+//     if(!x.done) {
+//       if(x.value instanceof Promise) {
+//         x.value.then(iterate).catch(err => it.throw(err));
+//       } else {
+//         setTimeout(iterate, 0, x.value);
+//       }
+//     }
+//   })();
+// }
 
-function* theFutureIsNow() {
-  const dataA = yield nfcall(fs.readFile, __dirname + '/a.txt');
-  const dataB = yield nfcall(fs.readFile, __dirname + '/b.txt');
-  const dataC = yield nfcall(fs.readFile, __dirname + '/c.txt');
+// function* theFutureIsNow() {
+//   const dataA = yield nfcall(fs.readFile, __dirname + '/a.txt');
+//   const dataB = yield nfcall(fs.readFile, __dirname + '/b.txt');
+//   const dataC = yield nfcall(fs.readFile, __dirname + '/c.txt');
   
-  yield ptimeout(4*1000);
-  yield nfcall(fs.writeFile, 'd.txt', dataA+dataB+dataC);
-}
+//   yield ptimeout(4*1000);
+//   yield nfcall(fs.writeFile, 'd.txt', dataA+dataB+dataC);
+// }
 
-grun(theFutureIsNow);
+// grun(theFutureIsNow);
 
 // let txt = fs.readFile(__dirname +'/a.txt', "utf8", (err, data) => {
 //   if (err) {
@@ -231,3 +231,96 @@ grun(theFutureIsNow);
 //   })
 
 // console.log(__dirname +'/a.txt')
+
+// const highlightActions = document.querySelectorAll('[data-action="highlight"]');
+// highlightActions[0].dataset.containing = 'Жираф';
+// highlightActions[0].dataset.casesensitive = "true";
+
+// for(let a of highlightActions) {
+//     a.addEventListener('click', evt => {
+//         evt.preventDefault();
+//         highlightParas(a.dataset.containing);
+//     });
+// }
+
+// const removeHighlightActions = document.querySelectorall('[data-acrio="removeHighlights"]');
+// for(let a of removeHighlightActions) {
+//     a.addEventListener('click', evt => {
+//         evt.preventDefault();
+//         removeParaHighlights();
+//     });
+// }
+
+// function refreshServerInfo() {
+//     const req = new XMLHttpRequest();
+
+//     req.addEventListener('load', function() {
+//         console.log(this.responseText);
+//         const data = JSON.parse(this.responseText);
+//         const serverInfo = document.querySelector('.serverInfo');
+//         Object.keys(data).forEach(p => {
+//             const replacements = serverInfo.querySelectorAll(`[data-replace="${p}"`);
+//             for (let r of replacements) {
+//                 r.textContent = data[p];
+//             }
+//         });
+//     });
+//     req.open('GET', 'http://localhost:7070', true);
+//     req.send();
+// }
+
+// function refreshServerInfo() {
+//     const $serverInfo = $('.serverInfo');
+//     $.get('http://localhost:7070').then(
+//         function(data) {
+//             Object.keys(data).forEach(p => {
+//                 $(`[data-replace="${p}"]`).text(data[p]);
+//             });
+//         }
+//     )
+// }
+// setInterval(refreshServerInfo, 1000);
+// console.log('test');
+
+// const debug1 = require('./my_module.js')('First');
+// const debug2 = require('./my_module.js')('Second');
+
+// debug1("first is running.")
+// debug2("second is running.")
+
+// setTimeout(() => {
+//     debug1("something happends 1");
+//     debug2("something happends 2");
+// }, 500);
+
+ 
+// const fs = require('fs')
+
+// const filenames = process.argv.slice(2)
+
+// let counts = filenames.map(f => {
+//     try {
+//         const data = fs.readFileSync(f, {encoding: 'utf8'})
+//         return `${f}: ${data.split('\n').length}`
+//     } catch {
+//         return `${f}: reading error`
+//     }
+// })
+
+// console.log(counts.join('\n'))
+
+
+const exec = require('child_process').exec
+
+exec('ls -la', function(err, stdout, stderr) {
+    if(err) return console.error('ls command error')
+
+    stdout = stdout.toString();
+    console.log(stdout)
+    stderr = stderr.toString()
+
+    if(stderr !== '') {
+        console.error('Error:')
+        console.error(stderr)
+    }
+})

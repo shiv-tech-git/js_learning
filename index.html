@@ -2,14 +2,32 @@
 <html>
     <head>
         <link rel="stylesheet" href="main.css">
+        <meta charset="UTF-8">
     </head>
     <body>
-        <h1>My first aplication!</h1>
-        <canvas id="mainCanvas"></canvas>
+        <!-- <canvas id="mainCanvas"></canvas> -->
+        <div class="serverInfo">
+            Сервен на платформе <span data-replace="platform">???</span>, 
+            Версия Node <span data-replace="nodeVersion">???</span>. 
+            Время его непрерывной работы <span data-replace="uptime">???</span> секунд.
+        </div>
         
         <script src="paper-full.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="main.js"></script>
         <script src="es6/test.js"></script>
+        <!-- <script type="application/javascript;">
+            function refreshServerInfo() {
+                console.log('in function refresh');
+                const req = new XMLHttpRequest();
+                req.addEventListener('load', function() {
+                    console.log(this.responseText);
+                });
+                req.open('GET', 'http://localhost:7070', true);
+                req.send();
+            }
+            refreshServerInfo();
+            console.log('in script')
+        </script> -->
     </body>
 </html>
